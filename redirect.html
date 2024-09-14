@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Click to Play YouTube Video</title>
     <style>
+        /* 初期状態で真っ白な画面とボタンを中央に配置 */
         body, html {
             height: 100%;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white;
+            background-color: white; /* 真っ白な背景 */
             cursor: pointer;
         }
 
@@ -27,11 +28,11 @@
         }
 
         #playButton:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* ホバー時の色変更 */
         }
 
         #playerWrapper {
-            display: none;
+            display: none; /* 初期状態では非表示 */
             position: absolute;
             top: 0;
             left: 0;
@@ -40,43 +41,46 @@
         }
 
         .hidden {
-            background-color: transparent;
+            background-color: transparent; /* ボタンが押されたら透明に */
         }
 
         .noCursor {
-            cursor: none;
+            cursor: none; /* カーソルを隠す */
         }
     </style>
 </head>
 <body>
 
-    <button id="playButton">Play Video</button>
+    <!-- 真ん中に配置された再生ボタン -->
+    <button id="playButton">Press it to bring good luck<br>押すと幸運が訪れます</button>
 
+    <!-- YouTube動画用のプレイヤーラッパー -->
     <div id="playerWrapper">
         <div id="player"></div>
     </div>
 
     <script>
-        var player;
-
-        // YouTube IFrame APIの非同期読み込み
+        // YouTube IFrame APIを非同期で読み込む
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+        var player;
+
+        // YouTube IFrame APIが準備されたときに呼び出される関数
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                videoId: 'dQw4w9WgXcQ', // 再生するYouTube動画のID
+                videoId: 'dQw4w9WgXcQ', // 再生したいYouTube動画のIDをここに入れてください
                 playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'disablekb': 1,
-                    'fs': 0,
-                    'rel': 0,
-                    'modestbranding': 1,
-                    'showinfo': 0,
-                    'playsinline': 1
+                    'autoplay': 0,  // 自動再生はユーザー操作後に行う
+                    'controls': 0,  // コントロールバーを非表示に
+                    'disablekb': 1, // キーボードコントロールを無効に
+                    'fs': 0,        // プレイヤーにフルスクリーンボタンを表示しない
+                    'rel': 0,       // 関連動画を表示しない
+                    'modestbranding': 1, // YouTubeロゴの最小化
+                    'showinfo': 0,  // 動画情報を非表示
+                    'playsinline': 1 // モバイルデバイスでインライン再生
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -85,30 +89,34 @@
             });
         }
 
+        // プレイヤーが準備完了したときに呼ばれる関数
         function onPlayerReady(event) {
             document.getElementById('playButton').addEventListener('click', function() {
-                // ボタンがクリックされたら背景とボタンを透明化
+                // ページを透明にして、ボタンと背景を隠す
                 document.body.classList.add('hidden');
                 document.body.classList.add('noCursor'); // カーソルを隠す
+
+                // プレイヤーを表示
                 document.getElementById('playerWrapper').style.display = 'block';
 
                 // 動画をフルスクリーンで再生
                 makeFullscreen();
-                player.unMute();  // ミュートを解除
-                player.playVideo();  // 再生
+                player.unMute(); // ミュートを解除
+                player.playVideo(); // 動画を再生
             });
         }
 
+        // 動画の状態が変わったときに呼ばれる関数
         function onPlayerStateChange(event) {
             if (event.data == YT.PlayerState.ENDED) {
-                // 動画終了時にフルスクリーンを解除
+                // 動画が終わったらフルスクリーンを解除する
                 exitFullscreen();
             }
         }
 
         // フルスクリーンにする関数
         function makeFullscreen() {
-            var iframe = document.getElementById("playerWrapper");
+            var iframe = document.getElementById("player");
             if (iframe.requestFullscreen) {
                 iframe.requestFullscreen();
             } else if (iframe.mozRequestFullScreen) { // Firefox
@@ -120,40 +128,15 @@
             }
         }
 
-        // フルスクリーン解除を防ぐために再度フルスクリーンにする
-        document.addEventListener('fullscreenchange', function () {
-            if (!document.fullscreenElement) {
-                makeFullscreen(); // 解除されたら再度フルスクリーンに
-            }
-        });
-
-        document.addEventListener('mozfullscreenchange', function () {
-            if (!document.mozFullScreenElement) {
-                makeFullscreen();
-            }
-        });
-
-        document.addEventListener('webkitfullscreenchange', function () {
-            if (!document.webkitFullscreenElement) {
-                makeFullscreen();
-            }
-        });
-
-        document.addEventListener('msfullscreenchange', function () {
-            if (!document.msFullscreenElement) {
-                makeFullscreen();
-            }
-        });
-
-        // フルスクリーンを解除する関数（ただし動画終了時のみ）
+        // フルスクリーンを解除する関数
         function exitFullscreen() {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) {
+            } else if (document.mozCancelFullScreen) { // Firefox
                 document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) {
+            } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
                 document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
+            } else if (document.msExitFullscreen) { // IE/Edge
                 document.msExitFullscreen();
             }
         }
