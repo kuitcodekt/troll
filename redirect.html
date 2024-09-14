@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restricted YouTube Player</title>
+    <title>Restricted YouTube Player with Hidden Cursor</title>
     <style>
         body, html {
             height: 100%;
             margin: 0;
             overflow: hidden;
+            cursor: none; /* マウスカーソルを隠す */
         }
 
         #player {
@@ -38,14 +39,15 @@
             player = new YT.Player('player', {
                 videoId: 'dQw4w9WgXcQ', // 再生したいYouTube動画のIDをここに入れてください
                 playerVars: {
-                    'autoplay': 1,
+                    'autoplay': 1,  // 自動再生
                     'controls': 0,  // コントロールバーを非表示に
                     'disablekb': 1, // キーボードコントロールを無効に
                     'fs': 0,        // プレイヤーにフルスクリーンボタンを表示しない
                     'rel': 0,       // 関連動画を表示しない
                     'modestbranding': 1, // YouTubeロゴの最小化
                     'showinfo': 0,  // 動画情報を非表示
-                    'playsinline': 1 // モバイルデバイスでインライン再生
+                    'playsinline': 1, // モバイルデバイスでインライン再生
+                    'mute': 1       // 自動再生にはミュートが必要
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -58,6 +60,7 @@
         function onPlayerReady(event) {
             // 動画を自動でフルスクリーンにする
             makeFullscreen();
+            event.target.playVideo();  // 自動で再生
         }
 
         // 動画の状態が変わったときに呼ばれる関数
@@ -101,6 +104,15 @@
                 makeFullscreen(); // フルスクリーン解除が発生したら再度フルスクリーンに
             }
         });
+
+        // 動画が再生されている間マウスカーソルを隠す
+        document.onmousemove = function() {
+            clearTimeout(window.cursorTimeout);
+            document.body.style.cursor = 'default'; // 一時的にカーソルを表示
+            window.cursorTimeout = setTimeout(function() {
+                document.body.style.cursor = 'none'; // 一定時間後にカーソルを再び隠す
+            }, 2000); // 2秒後にカーソルを隠す
+        };
     </script>
 
 </body>
