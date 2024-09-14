@@ -1,50 +1,107 @@
 <!DOCTYPE html>
-<html>
-  <body>
-    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restricted YouTube Player</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
     <div id="player"></div>
 
     <script>
-      // 2. This code loads the IFrame Player API code asynchronously.
-      var tag = document.createElement('script');
+        // YouTube IFrame APIを非同期で読み込む
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-      tag.src = "https://youtu.be/dQw4w9WgXcQ?si=YB8WvvNKJFKDmnBc";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        var player;
 
-      // 3. This function creates an <iframe> (and YouTube player)
-      //    after the API code downloads.
-      var player;
-      function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
-          height: '360',
-          width: '640',
-          videoId: 'M7lc1UVf-VE',
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-          }
-        });
-      }
-
-      // 4. The API will call this function when the video player is ready.
-      function onPlayerReady(event) {
-        event.target.playVideo();
-      }
-
-      // 5. The API calls this function when the player's state changes.
-      //    The function indicates that when playing a video (state=1),
-      //    the player should play for six seconds and then stop.
-      var done = false;
-      function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING && !done) {
-          setTimeout(stopVideo, 183000);
-          done = true;
+        // YouTube IFrame APIが準備されたときに呼び出される関数
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                videoId: 'dQw4w9WgXcQ', // 再生したいYouTube動画のIDをここに入れてください
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,  // コントロールバーを非表示に
+                    'disablekb': 1, // キーボードコントロールを無効に
+                    'fs': 0,        // プレイヤーにフルスクリーンボタンを表示しない
+                    'rel': 0,       // 関連動画を表示しない
+                    'modestbranding': 1, // YouTubeロゴの最小化
+                    'showinfo': 0,  // 動画情報を非表示
+                    'playsinline': 1 // モバイルデバイスでインライン再生
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
         }
-      }
-      function stopVideo() {
-        player.stopVideo();
-      }
+
+        // プレイヤーが準備完了したときに呼ばれる関数
+        function onPlayerReady(event) {
+            // 動画を自動でフルスクリーンにする
+            makeFullscreen();
+        }
+
+        // 動画の状態が変わったときに呼ばれる関数
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.ENDED) {
+                // 動画が終わったらフルスクリーンを解除する
+                exitFullscreen();
+            }
+        }
+
+        // フルスクリーンにする関数
+        function makeFullscreen() {
+            var iframe = document.getElementById("player");
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.mozRequestFullScreen) { // Firefox
+                iframe.mozRequestFullScreen();
+            } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari, Opera
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) { // IE/Edge
+                iframe.msRequestFullscreen();
+            }
+        }
+
+        // フルスクリーンを解除する関数
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { // Firefox
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { // IE/Edge
+                document.msExitFullscreen();
+            }
+        }
+
+        // フルスクリーンを解除させないようにする（ブラウザのセキュリティポリシーで制限あり）
+        document.addEventListener('fullscreenchange', function () {
+            if (!document.fullscreenElement) {
+                makeFullscreen(); // フルスクリーン解除が発生したら再度フルスクリーンに
+            }
+        });
     </script>
-  </body>
+
+</body>
 </html>
