@@ -3,27 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unmuted Auto-Play YouTube Player</title>
+    <title>Click to Play YouTube Video</title>
     <style>
+        /* 初期状態で真っ白な画面とボタンを中央に配置 */
         body, html {
             height: 100%;
             margin: 0;
-            overflow: hidden;
-            cursor: none; /* マウスカーソルを隠す */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white; /* 真っ白な背景 */
+            cursor: pointer;
         }
 
-        #player {
+        #playButton {
+            padding: 20px 40px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #playButton:hover {
+            background-color: #0056b3; /* ホバー時の色変更 */
+        }
+
+        #playerWrapper {
+            display: none; /* 初期状態では非表示 */
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
         }
+
+        .hidden {
+            background-color: transparent; /* ボタンが押されたら透明に */
+        }
+
+        .noCursor {
+            cursor: none; /* カーソルを隠す */
+        }
     </style>
 </head>
 <body>
 
-    <div id="player"></div>
+    <!-- 真ん中に配置された再生ボタン -->
+    <button id="playButton">Play Video</button>
+
+    <!-- YouTube動画用のプレイヤーラッパー -->
+    <div id="playerWrapper">
+        <div id="player"></div>
+    </div>
 
     <script>
         // YouTube IFrame APIを非同期で読み込む
@@ -39,7 +73,7 @@
             player = new YT.Player('player', {
                 videoId: 'dQw4w9WgXcQ', // 再生したいYouTube動画のIDをここに入れてください
                 playerVars: {
-                    'autoplay': 1,  // 自動再生（音声付きで実行できるかはブラウザポリシーに依存）
+                    'autoplay': 0,  // 自動再生はユーザー操作後に行う
                     'controls': 0,  // コントロールバーを非表示に
                     'disablekb': 1, // キーボードコントロールを無効に
                     'fs': 0,        // プレイヤーにフルスクリーンボタンを表示しない
@@ -57,10 +91,19 @@
 
         // プレイヤーが準備完了したときに呼ばれる関数
         function onPlayerReady(event) {
-            // 動画を自動でフルスクリーンにし、再生する
-            makeFullscreen();
-            event.target.unMute();  // ミュート解除
-            event.target.playVideo();  // 自動で再生
+            document.getElementById('playButton').addEventListener('click', function() {
+                // ページを透明にして、ボタンと背景を隠す
+                document.body.classList.add('hidden');
+                document.body.classList.add('noCursor'); // カーソルを隠す
+
+                // プレイヤーを表示
+                document.getElementById('playerWrapper').style.display = 'block';
+
+                // 動画をフルスクリーンで再生
+                makeFullscreen();
+                player.unMute(); // ミュートを解除
+                player.playVideo(); // 動画を再生
+            });
         }
 
         // 動画の状態が変わったときに呼ばれる関数
@@ -97,22 +140,6 @@
                 document.msExitFullscreen();
             }
         }
-
-        // フルスクリーンを解除させないようにする（ブラウザのセキュリティポリシーで制限あり）
-        document.addEventListener('fullscreenchange', function () {
-            if (!document.fullscreenElement) {
-                makeFullscreen(); // フルスクリーン解除が発生したら再度フルスクリーンに
-            }
-        });
-
-        // 動画が再生されている間マウスカーソルを隠す
-        document.onmousemove = function() {
-            clearTimeout(window.cursorTimeout);
-            document.body.style.cursor = 'default'; // 一時的にカーソルを表示
-            window.cursorTimeout = setTimeout(function() {
-                document.body.style.cursor = 'none'; // 一定時間後にカーソルを再び隠す
-            }, 2000); // 2秒後にカーソルを隠す
-        };
     </script>
 
 </body>
