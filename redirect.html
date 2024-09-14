@@ -40,14 +40,14 @@
                 videoId: 'dQw4w9WgXcQ', // 再生したいYouTube動画のIDをここに入れてください
                 playerVars: {
                     'autoplay': 1,  // 自動再生
-                    'controls': 0,  // コントロールバーを非表示に
+                    'controls': 1,  // コントロールバーを非表示に
                     'disablekb': 1, // キーボードコントロールを無効に
                     'fs': 0,        // プレイヤーにフルスクリーンボタンを表示しない
                     'rel': 0,       // 関連動画を表示しない
                     'modestbranding': 1, // YouTubeロゴの最小化
-                    'showinfo': 0,  // 動画情報を非表示
+                    'showinfo': 1,  // 動画情報を非表示
                     'playsinline': 1, // モバイルデバイスでインライン再生
-                    'mute': 1       // 自動再生にはミュートが必要
+                    'mute': 0       // 自動再生にはミュートが必要
                 },
                 events: {
                     'onReady': onPlayerReady,
