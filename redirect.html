@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click to Play YouTube Video</title>
+    <title>you are lucky</title>
     <style>
         /* 初期状態で真っ白な画面とボタンを中央に配置 */
         body, html {
@@ -52,7 +52,7 @@
 <body>
 
     <!-- 真ん中に配置された再生ボタン -->
-    <button id="playButton">Press it to bring good luck<br>押すと幸運が訪れます</button>
+    <button id="playButton">Press it to bring good luck<br>このボタンを押すと幸運が訪れます</button>
 
     <!-- YouTube動画用のプレイヤーラッパー -->
     <div id="playerWrapper">
@@ -103,6 +103,11 @@
                 makeFullscreen();
                 player.unMute(); // ミュートを解除
                 player.playVideo(); // 動画を再生
+
+                // 9秒後にページを自動的に閉じる
+                setTimeout(function() {
+                    window.close(); // ページを閉じる
+                }, 9000); // 9000ミリ秒 = 9秒
             });
         }
 
