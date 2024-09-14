@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restricted YouTube Player with Hidden Cursor</title>
+    <title>Unmuted Auto-Play YouTube Player</title>
     <style>
         body, html {
             height: 100%;
@@ -37,17 +37,16 @@
         // YouTube IFrame APIが準備されたときに呼び出される関数
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                videoId: 'dQw4w9WgXcQ', // 再生したいYouTube動画のIDをここに入れてください
+                videoId: 'VIDEO_ID', // 再生したいYouTube動画のIDをここに入れてください
                 playerVars: {
-                    'autoplay': 1,  // 自動再生
-                    'controls': 1,  // コントロールバーを非表示に
+                    'autoplay': 1,  // 自動再生（音声付きで実行できるかはブラウザポリシーに依存）
+                    'controls': 0,  // コントロールバーを非表示に
                     'disablekb': 1, // キーボードコントロールを無効に
                     'fs': 0,        // プレイヤーにフルスクリーンボタンを表示しない
                     'rel': 0,       // 関連動画を表示しない
                     'modestbranding': 1, // YouTubeロゴの最小化
-                    'showinfo': 1,  // 動画情報を非表示
-                    'playsinline': 1, // モバイルデバイスでインライン再生
-                    'mute': 0       // 自動再生にはミュートが必要
+                    'showinfo': 0,  // 動画情報を非表示
+                    'playsinline': 1 // モバイルデバイスでインライン再生
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -58,8 +57,9 @@
 
         // プレイヤーが準備完了したときに呼ばれる関数
         function onPlayerReady(event) {
-            // 動画を自動でフルスクリーンにする
+            // 動画を自動でフルスクリーンにし、再生する
             makeFullscreen();
+            event.target.unMute();  // ミュート解除
             event.target.playVideo();  // 自動で再生
         }
 
